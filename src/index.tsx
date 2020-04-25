@@ -1,14 +1,11 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Tetris from './Tetris';
-import * as serviceWorker from './serviceWorker';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import {Tetris} from "./components/Tetris";
+import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Tetris />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <Tetris/>,
+    document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change
