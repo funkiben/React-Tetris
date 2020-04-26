@@ -65,10 +65,8 @@ export const Tetris = () => {
       game.moveCurrentPieceRight();
     } else if (event.key === 'ArrowDown') {
       game.moveCurrentPieceDown();
-      setScore(game.rowsCompleted());
     } else if (event.key === ' ') {
-      while (!game.moveCurrentPieceDown()) ;
-      setScore(game.rowsCompleted());
+      game.dropCurrentPiece();
     } else if (event.key === 'ArrowUp') {
       game.rotateCurrentPiece();
     } else {

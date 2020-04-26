@@ -1,6 +1,9 @@
 import {Piece} from "./Piece";
 
 export interface Board {
+  readonly width: number;
+  readonly height: number;
+
   collides(piece: Piece, pieceX: number, pieceY: number): boolean;
 
   dropPiece(piece: Piece, color: BlockColor, pieceX: number, pieceY: number): number;
@@ -65,6 +68,8 @@ export function board(width: number, height: number): Board {
   }
 
   return {
+    width,
+    height,
     collides: (piece: Piece, pieceX: number, pieceY: number): boolean => {
       return collidesWithWalls(piece, pieceX)
           || collidesWithGround(piece, pieceY)

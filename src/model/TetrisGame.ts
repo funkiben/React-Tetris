@@ -4,11 +4,13 @@ import {BlockColor, Board, board} from "./Board";
 export interface TetrisGame {
   moveCurrentPieceDown(): boolean;
 
+  dropCurrentPiece(): void;
+
   moveCurrentPieceLeft(): boolean;
 
   moveCurrentPieceRight(): boolean;
 
-  rotateCurrentPiece(): void;
+  rotateCurrentPiece(): boolean;
 
   getCurrentPiece(): Piece;
 
@@ -27,69 +29,15 @@ export interface TetrisGame {
 
 export function tetrisGame(width: number, height: number): TetrisGame {
   const gameBoard: Board = board(width, height);
-  let dropping: DroppingPiece = nextDroppingPiece();
+  let currentPiece: DroppingPiece = nextDroppingPiece();
   let rowsCompleted = 0;
 
-  function nextDroppingPiece(): DroppingPiece {
-    return droppingPiece(width, height);
+  function nextDroppingPiece() {
+    const piece: Piece = nextPiece();
+    const color: BlockColor = getPieceColor(piece)!;
+    return droppingPiece(gameBoard, piece, color);
   }
 
-  return {
-    moveCurrentPieceDown: (): boolean => {
-      if (gameBoard.collides(dropping.piece(), dropping.x(), dropping.y() - 1)) {
-        rowsCompleted += gameBoard.dropPiece(dropping.piece(), dropping.color, dropping.x(), dropping.y());
-        dropping = nextDroppingPiece();
-        return true;
-      }
-      dropping.moveDown();
-      return false;
-    },
-    moveCurrentPieceLeft: (): boolean => {
-      if (gameBoard.collides(dropping.piece(), dropping.x() - 1, dropping.y())) {
-        return false;
-      }
-      dropping.moveLeft();
-      return true;
-    },
-    moveCurrentPieceRight: (): boolean => {
-      if (gameBoard.collides(dropping.piece(), dropping.x() + 1, dropping.y())) {
-        return false;
-      }
-      dropping.moveRight();
-      return true;
-    },
-    rotateCurrentPiece: (): void => {
-      dropping.rotate();
-    },
-    getCurrentPiece: (): Piece => dropping.piece(),
-    getCurrentPieceColor: (): BlockColor => dropping.color,
-    getCurrentPieceX: (): number => dropping.x(),
-    getCurrentPieceY: (): number => dropping.y(),
-    getCurrentPieceDropY: (): number => gameBoard.getDropY(dropping.piece(), dropping.x(), dropping.y()),
-    rowsCompleted: (): number => rowsCompleted,
-    getBlock: (x: number, y: number): BlockColor | undefined => gameBoard.getBlock(x, y)
-  }
-}
-
-interface DroppingPiece {
-  readonly color: BlockColor;
-
-  piece(): Piece;
-
-  x(): number;
-
-  y(): number;
-
-  moveDown(): void;
-
-  moveLeft(): void;
-
-  moveRight(): void;
-
-  rotate(): void;
-}
-
-function droppingPiece(boardWidth: number, boardHeight: number): DroppingPiece {
   function nextPiece(): Piece {
     return PIECES[Math.floor(Math.random() * PIECES.length)];
   }
@@ -112,28 +60,118 @@ function droppingPiece(boardWidth: number, boardHeight: number): DroppingPiece {
     }
   }
 
-  let piece: Piece = nextPiece();
+  return {
+    moveCurrentPieceDown: (): boolean => {
+      const result: number | undefined = currentPiece.moveDown();
+      if (result) {
+        rowsCompleted += result;
+        currentPiece = nextDroppingPiece();
+        return true;
+      }
+      return false;
+    },
+    dropCurrentPiece: (): void => {
+      currentPiece.drop();
+      currentPiece = nextDroppingPiece();
+    },
+    moveCurrentPieceLeft: (): boolean => currentPiece.moveLeft(),
+    moveCurrentPieceRight: (): boolean => currentPiece.moveRight(),
+    rotateCurrentPiece: (): boolean => currentPiece.rotate(),
+    getCurrentPiece: (): Piece => currentPiece.piece(),
+    getCurrentPieceColor: (): BlockColor => currentPiece.color,
+    getCurrentPieceX: (): number => currentPiece.x(),
+    getCurrentPieceY: (): number => currentPiece.y(),
+    getCurrentPieceDropY: (): number => currentPiece.getDropY(),
+    rowsCompleted: (): number => rowsCompleted,
+    getBlock: (x: number, y: number): BlockColor | undefined => gameBoard.getBlock(x, y)
+  }
+}
 
-  let x = Math.floor(boardWidth / 2);
-  let y = boardHeight - piece.maxY - 1;
+interface DroppingPiece {
+  readonly color: BlockColor;
+
+  piece(): Piece;
+
+  x(): number;
+
+  y(): number;
+
+  moveDown(): number | undefined;
+
+  drop(): number;
+
+  getDropY(): number;
+
+  moveLeft(): boolean;
+
+  moveRight(): boolean;
+
+  rotate(): boolean;
+}
+
+function droppingPiece(board: Board, piece: Piece, color: BlockColor): DroppingPiece {
+  let x = Math.floor(board.width / 2);
+  let y = board.height - piece.maxY - 1;
+  let dropYCached: number | undefined = undefined;
+
+  function getDropY(): number {
+    return board.getDropY(piece, x, y);
+  }
 
   return {
+    color,
     piece: (): Piece => piece,
     x: (): number => x,
     y: (): number => y,
-    color: getPieceColor(piece)!,
-    moveDown: (): void => {
+    moveDown: (): number | undefined => {
+      if (board.collides(piece, x, y - 1)) {
+        return board.dropPiece(piece, color, x, y);
+      }
       y--;
+      return undefined;
     },
-    moveRight: (): void => {
-      x++;
+    drop: (): number => {
+      return board.dropPiece(piece, color, x, y);
     },
-    moveLeft: (): void => {
+    getDropY: (): number => {
+      return dropYCached || (dropYCached = getDropY());
+    },
+    moveLeft: (): boolean => {
+      if (board.collides(piece, x - 1, y)) {
+        return false;
+      }
       x--;
+      dropYCached = undefined;
+      return true;
     },
-    rotate: (): void => {
-      piece = piece.rotate();
+    moveRight: (): boolean => {
+      if (board.collides(piece, x + 1, y)) {
+        return false;
+      }
+      x++;
+      dropYCached = undefined;
+      return true;
+    },
+    rotate: (): boolean => {
+      const rotatedPiece = piece.rotate();
+      let rotatedX = x;
+
+      if (rotatedPiece.maxX + x >= board.width) {
+        rotatedX = board.width - rotatedPiece.maxX - 1;
+      } else if (rotatedPiece.minX + x < 0) {
+        rotatedX = -rotatedPiece.minX;
+      }
+
+      if (!board.collides(rotatedPiece, rotatedX, y)) {
+        piece = rotatedPiece;
+        x = rotatedX;
+        dropYCached = undefined;
+        return true;
+      }
+
+      return false;
     }
   }
 }
+
 
