@@ -63,7 +63,7 @@ export function tetrisGame(width: number, height: number): TetrisGame {
   return {
     moveCurrentPieceDown: (): boolean => {
       const result: number | undefined = currentPiece.moveDown();
-      if (result) {
+      if (typeof result === 'number') {
         rowsCompleted += result;
         currentPiece = nextDroppingPiece();
         return true;
