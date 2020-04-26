@@ -2,7 +2,8 @@ export const PIECE_I: Piece = piece(
     coord(-2, 1),
     coord(-1, 1),
     coord(0, 1),
-    coord(1, 1)
+    coord(1, 1),
+    coord(-2, 1)
 );
 
 export const PIECE_J: Piece = piece(
@@ -20,10 +21,11 @@ export const PIECE_L: Piece = piece(
 );
 
 export const PIECE_O: Piece = piece(
-    coord(1, 1),
-    coord(1, 0),
-    coord(0, 1),
-    coord(0, 0)
+    coord(-1, -1),
+    coord(-1, 0),
+    coord(0, -1),
+    coord(0, 0),
+    coord(0, -1)
 );
 
 export const PIECE_S: Piece = piece(
@@ -66,7 +68,7 @@ export interface Piece {
   forEachBlock(fn: (x: number, y: number) => void): void;
 }
 
-function piece(a: Coordinate, b: Coordinate, c: Coordinate, d: Coordinate): Piece {
+function piece(a: Coordinate, b: Coordinate, c: Coordinate, d: Coordinate, rotationOrigin: Coordinate = coord(0, 0)): Piece {
   const coords = [a, b, c, d];
 
   function equals(piece: Piece): boolean {
@@ -79,8 +81,8 @@ function piece(a: Coordinate, b: Coordinate, c: Coordinate, d: Coordinate): Piec
     minY: getMinY(coords),
     maxY: getMaxY(coords),
     rotate: () => {
-      const [a, b, c, d] = coords.map(c => c.rotate90());
-      return piece(a, b, c, d);
+      const [a, b, c, d] = coords.map(c => c.rotate90(rotationOrigin));
+      return piece(a, b, c, d, rotationOrigin);
     },
     contains: (x: number, y: number): boolean => {
       return coords.some(c => c.x === x && c.y === y);
@@ -121,7 +123,7 @@ interface Coordinate {
   readonly x: number;
   readonly y: number;
   readonly equal: (c: Coordinate) => boolean;
-  readonly rotate90: () => Coordinate;
+  readonly rotate90: (origin: Coordinate) => Coordinate;
 }
 
 function coord(x: number, y: number): Coordinate {
@@ -129,6 +131,6 @@ function coord(x: number, y: number): Coordinate {
     x,
     y,
     equal: c => x === c.x && y === c.y,
-    rotate90: () => coord(y, -x)
+    rotate90: (origin: Coordinate) => coord(y + origin.x, -x + origin.y)
   };
 }
