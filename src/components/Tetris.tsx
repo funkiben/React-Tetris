@@ -23,6 +23,35 @@ export const Tetris = () => {
 
   useEventListener('keydown', onKeyPress);
 
+  function updateGraphics() {
+    updateBlockColors();
+    updateScore();
+  }
+
+  function updateBlockColors(): void {
+    setBlockColors(getBlockColors());
+  }
+
+  function updateScore(): void {
+    setScore(game.rowsCompleted());
+  }
+
+  function onKeyPress(event: React.KeyboardEvent) {
+    if (event.key === 'ArrowLeft') {
+      game.moveCurrentPieceLeft();
+    } else if (event.key === 'ArrowRight') {
+      game.moveCurrentPieceRight();
+    } else if (event.key === 'ArrowDown') {
+      game.moveCurrentPieceDown();
+    } else if (event.key === ' ') {
+      game.dropCurrentPiece();
+    } else if (event.key === 'ArrowUp') {
+      game.rotateCurrentPiece();
+    } else {
+      return;
+    }
+    updateGraphics();
+  }
 
   function getBlockColor(x: number, y: number): string | undefined {
     if (game.getCurrentPiece().contains(x - game.getCurrentPieceX(), y - game.getCurrentPieceY())) {
@@ -43,36 +72,6 @@ export const Tetris = () => {
       }
     }
     return blockColors;
-  }
-
-  function updateBlockColors(): void {
-    setBlockColors(getBlockColors());
-  }
-
-  function updateScore(): void {
-    setScore(game.rowsCompleted());
-  }
-
-  function updateGraphics() {
-    updateBlockColors();
-    updateScore();
-  }
-
-  function onKeyPress(event: React.KeyboardEvent) {
-    if (event.key === 'ArrowLeft') {
-      game.moveCurrentPieceLeft();
-    } else if (event.key === 'ArrowRight') {
-      game.moveCurrentPieceRight();
-    } else if (event.key === 'ArrowDown') {
-      game.moveCurrentPieceDown();
-    } else if (event.key === ' ') {
-      game.dropCurrentPiece();
-    } else if (event.key === 'ArrowUp') {
-      game.rotateCurrentPiece();
-    } else {
-      return;
-    }
-    updateGraphics();
   }
 
   return (

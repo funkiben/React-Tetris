@@ -1,3 +1,6 @@
+/**
+ * I Tetris piece definition.
+ */
 export const PIECE_I: Piece = piece(
     coord(-2, 1),
     coord(-1, 1),
@@ -6,6 +9,9 @@ export const PIECE_I: Piece = piece(
     coord(-2, 1)
 );
 
+/**
+ * J Tetris piece definition.
+ */
 export const PIECE_J: Piece = piece(
     coord(0, 0),
     coord(1, 1),
@@ -13,6 +19,9 @@ export const PIECE_J: Piece = piece(
     coord(-1, 0)
 );
 
+/**
+ * L Tetris piece definition.
+ */
 export const PIECE_L: Piece = piece(
     coord(1, 0),
     coord(0, 0),
@@ -20,6 +29,9 @@ export const PIECE_L: Piece = piece(
     coord(-1, -1)
 );
 
+/**
+ * O Tetris piece definition.
+ */
 export const PIECE_O: Piece = piece(
     coord(-1, -1),
     coord(-1, 0),
@@ -28,6 +40,9 @@ export const PIECE_O: Piece = piece(
     coord(0, -1)
 );
 
+/**
+ * S Tetris piece definition.
+ */
 export const PIECE_S: Piece = piece(
     coord(0, 0),
     coord(-1, 0),
@@ -35,6 +50,9 @@ export const PIECE_S: Piece = piece(
     coord(1, 1)
 );
 
+/**
+ * T Tetris piece definition.
+ */
 export const PIECE_T: Piece = piece(
     coord(0, 0),
     coord(-1, 0),
@@ -42,6 +60,9 @@ export const PIECE_T: Piece = piece(
     coord(1, 0)
 );
 
+/**
+ * Z Tetris piece definition.
+ */
 export const PIECE_Z: Piece = piece(
     coord(0, 0),
     coord(1, -1),
@@ -49,25 +70,71 @@ export const PIECE_Z: Piece = piece(
     coord(-1, 0)
 );
 
+/**
+ * All possible pieces in Tetris.
+ */
 export const PIECES: Piece[] = [PIECE_I, PIECE_J, PIECE_L, PIECE_O, PIECE_S, PIECE_T, PIECE_Z];
 
+/**
+ * A Tetris piece.
+ */
 export interface Piece {
+  /**
+   * The lower x bound of the piece, inclusive.
+   */
   readonly minX: number;
+  /**
+   * The upper x bound of the piece, inclusive.
+   */
   readonly maxX: number;
+  /**
+   * The lower y bound of the piece, inclusive.
+   */
   readonly minY: number;
+  /**
+   * The upper y bound of the piece, inclusive.
+   */
   readonly maxY: number;
 
+  /**
+   * Returns this piece by rotated 90 degrees.
+   */
   rotate(): Piece;
 
+  /**
+   * Checks if the piece contains the given coordinates.
+   * @param x The x coordinate to check.
+   * @param y The y coordinate to check.
+   */
   contains(x: number, y: number): boolean;
 
+  /**
+   * Checks if the two pieces are equal, including rotation.
+   * @param piece The other piece to check equality with.
+   */
   equals(piece: Piece): boolean;
 
+  /**
+   * Checks for equality between the two pieces ignoring rotation.
+   * @param piece The other piece to check equality with.
+   */
   sameShape(piece: Piece): boolean;
 
+  /**
+   * Calls the given function on each block the piece consists of.
+   * @param fn The function to call on each block. It's given the coordinates of each block.
+   */
   forEachBlock(fn: (x: number, y: number) => void): void;
 }
 
+/**
+ * Creates a new block consisting of the given blocks and the point about which to rotate the piece.
+ * @param a The coordinates of the first block this piece consists of.
+ * @param b The coordinates of the second block this piece consists of.
+ * @param c The coordinates of the third block this piece consists of.
+ * @param d The coordinates of the fourth block this piece consists of.
+ * @param rotationOrigin The point to rotate this piece about, default is the origin.
+ */
 function piece(a: Coordinate, b: Coordinate, c: Coordinate, d: Coordinate, rotationOrigin: Coordinate = coord(0, 0)): Piece {
   const coords = [a, b, c, d];
 
@@ -119,13 +186,33 @@ function getMaxY(coords: Coordinate[]): number {
   return coords.map(c => c.y).reduce((y1, y2) => Math.max(y1, y2), -Infinity);
 }
 
+/**
+ * A 2-dimensional coordinate.
+ */
 interface Coordinate {
+  /**
+   * The x coordinate.
+   */
   readonly x: number;
+  /**
+   * The y coordinate.
+   */
   readonly y: number;
+  /**
+   * Whether this coordinate is equal to the  other coordinate.
+   */
   readonly equal: (c: Coordinate) => boolean;
+  /**
+   * Rotates the coordinate about the given point.
+   */
   readonly rotate90: (origin: Coordinate) => Coordinate;
 }
 
+/**
+ * Creates a new coordinate with the given x and y.
+ * @param x The x coordinate.
+ * @param y The y coordinate.
+ */
 function coord(x: number, y: number): Coordinate {
   return {
     x,
