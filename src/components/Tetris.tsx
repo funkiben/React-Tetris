@@ -1,9 +1,9 @@
 import * as React from "react";
 import {TetrisGame, tetrisGame} from "../model/TetrisGame";
 import {Board} from "./Board";
-import {setInterval} from "timers";
 import {useEffect, useRef, useState} from "react";
 import useEventListener from "@use-it/event-listener";
+import {clearInterval, setInterval} from "timers";
 
 export const Tetris = () => {
   const width: number = 10;
@@ -15,13 +15,20 @@ export const Tetris = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      game.moveCurrentPieceDown();
-      updateGraphics();
+      if (tick()) {
+        clearInterval(interval);
+      }
     }, 400);
     return () => clearInterval(interval);
   }, []);
 
   useEventListener('keydown', onKeyPress);
+
+  function tick(): boolean {
+    game.moveCurrentPieceDown();
+    updateGraphics();
+    return game.hasLost();
+  }
 
   function updateGraphics() {
     updateBlockColors();
@@ -37,6 +44,7 @@ export const Tetris = () => {
   }
 
   function onKeyPress(event: React.KeyboardEvent) {
+    if (game.hasLost()) return;
     if (event.key === 'ArrowLeft') {
       game.moveCurrentPieceLeft();
     } else if (event.key === 'ArrowRight') {
@@ -74,12 +82,12 @@ export const Tetris = () => {
     return blockColors;
   }
 
-  return (
-      <div style={{display: "flex"}}>
-        <Board blockColors={blockColors} width={width} height={height}/>
-        <p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>
-          Score: {score}
-        </p>
-      </div>
-  );
+  return game.hasLost()
+      ? (<p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>You lost! Score: {score}</p>)
+      : (<div style={{display: "flex"}}>
+          <Board blockColors={blockColors} width={width} height={height}/>
+          <p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>
+            Score: {score}
+          </p>
+        </div>);
 };
