@@ -122,7 +122,7 @@ export function tetrisGame(width: number, height: number): TetrisGame {
       return false;
     },
     dropCurrentPiece: (): void => {
-      currentPiece.drop();
+      rowsCompleted += currentPiece.drop();
       currentPiece = nextDroppingPiece();
     },
     moveCurrentPieceLeft: (): boolean => currentPiece.moveLeft(),
