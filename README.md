@@ -1,6 +1,4 @@
 
-Live demo at https://bens-react-tetris.herokuapp.com/
-
 
 This project was bootstrapped with [Create React Tetris](https://github.com/facebook/create-react-app).
 
