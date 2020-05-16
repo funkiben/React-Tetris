@@ -20,7 +20,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "serve "
+    "start": "serve -s build"
   },
   "eslintConfig": {
     "extends": "react-app"
