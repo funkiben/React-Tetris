@@ -16,7 +16,7 @@
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
-    "startDev": "react-scripts start",
+    "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
