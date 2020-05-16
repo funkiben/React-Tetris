@@ -9,16 +9,18 @@
     "@use-it/event-listener": "^0.1.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "typescript": "^3.8.3",
     "react-scripts": "3.4.1",
+    "serve": "^11.3.0",
     "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "startDev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start": "serve "
   },
   "eslintConfig": {
     "extends": "react-app"
