@@ -1,7 +1,7 @@
 import * as React from "react";
+import {useEffect, useRef, useState} from "react";
 import {TetrisGame, tetrisGame} from "../model/TetrisGame";
 import {Board} from "./Board";
-import {useEffect, useRef, useState} from "react";
 import useEventListener from "@use-it/event-listener";
 import {clearInterval, setInterval} from "timers";
 
@@ -43,7 +43,7 @@ export const Tetris = () => {
     setScore(game.rowsCompleted());
   }
 
-  function onKeyPress(event: React.KeyboardEvent) {
+  function onKeyPress(event: KeyboardEvent) {
     if (game.hasLost()) return;
     if (event.key === 'ArrowLeft') {
       game.moveCurrentPieceLeft();
@@ -83,11 +83,32 @@ export const Tetris = () => {
   }
 
   return game.hasLost()
-      ? (<p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>You lost! Score: {score}</p>)
+      ? (<p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>You lost! Score: {score}.
+        Refresh to play again.</p>)
       : (<div style={{display: "flex"}}>
-          <Board blockColors={blockColors} width={width} height={height}/>
-          <p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>
-            Score: {score}
-          </p>
-        </div>);
+        <Board blockColors={blockColors} width={width} height={height}/>
+        <p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>
+          Score: {score}
+        </p>
+        <p style={{fontSize: "30px", fontFamily: "Arial", margin: "20px"}}>
+          Controls:
+          <ol>
+            <li>
+              Right arrow: Move piece right
+            </li>
+            <li>
+              Left arrow: Move piece left
+            </li>
+            <li>
+              Up arrow: Rotate piece
+            </li>
+            <li>
+              Down arrow: Move piece down
+            </li>
+            <li>
+              Space: Drop piece to bottom
+            </li>
+          </ol>
+        </p>
+      </div>);
 };
